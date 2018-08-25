@@ -17,14 +17,13 @@ chan button_press = [0] of { mtype, byte} // Channel to record button presses
 // Models the elevator controller
 active proctype elevator_controller()
 {
-	curr_floor = 0;
-	motion_direction = 0; // Initially assumed to be going downwards
+	curr_floor = 0
+	motion_direction = 0 // Initially assumed to be going downwards
 
 start: 
 	if
 	:: lift_switch[0] == 1 || lift_switch[1] == 1 || lift_switch[2] == 1 -> goto close_elevator_doors
 	:: floor_switch[0] == 1 || floor_switch[1] == 1 || floor_switch[2] == 1 -> goto close_elevator_doors
-	:: else -> goto start
 	fi
 	
 close_elevator_doors: 
@@ -34,14 +33,13 @@ check_direction:
 	if 
 	:: curr_floor == 0 -> motion_direction = 1 // If at lowest floor, move up
 	:: curr_floor == 2 -> motion_direction = 0 // If at highest floor, move down
-	:: else -> goto move_up_or_down // Otherwise don't change
+	:: else -> goto move_up_or_down
 	fi
 
 move_up_or_down:
 	if
-	:: motion_direction == 0 -> goto upward_motion
-	:: motion_direction == 1 -> goto downward_motion
-	:: else -> skip // TODO: Throw some error in this state
+	:: motion_direction == 0 -> goto downward_motion
+	:: motion_direction == 1 -> goto upward_motion
 	fi
 
 upward_motion:
@@ -79,43 +77,44 @@ wait_for_move:
 	:: to_elevator?move_up -> goto moving_upward
 	:: to_elevator?move_down -> goto moving_downward
 	:: to_elevator?open_door -> door_state = 1 -> goto start
-	:: else -> skip // TODO: Throw some error here
 	fi
 
 moving_upward:
 	if
 	:: to_elevator?move_up -> goto moving_upward
 	:: to_elevator?stop -> goto wait_for_move
-	:: else -> skip // TODO: Throw some error here
 	fi
 
 moving_downward:
 	if
 	:: to_elevator?move_down -> goto moving_downward
 	:: to_elevator?stop -> goto wait_for_move
-	:: else -> skip // TODO: Throw some error here
 	fi
 }
 
 // Models the elevator button presses
 active [3] proctype press_elevator_buttons()
 {
-	button_press!press_elevator_button(_pid)
+start:
+	button_press!press_elevator_button(_pid % 3) -> goto start
 }
 
 // Models the floor button presses
 active [3] proctype press_floor_buttons()
 {
-	button_press!press_floor_button(_pid)
+start:
+	button_press!press_floor_button(_pid % 3) -> goto start
 }
 
 // Records the button presses for the controller
 active proctype record_button_presses()
 {
-	byte i;
+	byte i
+
+start:
 	if
 	:: button_press?press_floor_button(i) -> floor_switch[i] = 1
 	:: button_press?press_elevator_button(i) -> lift_switch[i] = 1
-	:: else -> skip // TODO: Throw some error here
 	fi
+	goto start
 }
