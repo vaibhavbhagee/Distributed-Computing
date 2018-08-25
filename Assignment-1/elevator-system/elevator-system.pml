@@ -21,6 +21,13 @@ active proctype elevator_controller()
 	motion_direction = 0; // Initially assumed to be going downwards
 
 start: 
+	if
+	:: lift_switch[0] == 1 || lift_switch[1] == 1 || lift_switch[2] == 1 -> goto close_elevator_doors
+	:: floor_switch[0] == 1 || floor_switch[1] == 1 || floor_switch[2] == 1 -> goto close_elevator_doors
+	:: else -> goto start
+	fi
+	
+close_elevator_doors: 
 	to_elevator!close_door // Instruct the elevator to close doors
 
 check_direction: 
@@ -90,14 +97,25 @@ moving_downward:
 	fi
 }
 
-// Models the elevator and floor button presses
-active proctype press_buttons()
+// Models the elevator button presses
+active [3] proctype press_elevator_buttons()
 {
+	button_press!press_elevator_button(_pid)
+}
 
+// Models the floor button presses
+active [3] proctype press_floor_buttons()
+{
+	button_press!press_floor_button(_pid)
 }
 
 // Records the button presses for the controller
 active proctype record_button_presses()
 {
-
+	byte i;
+	if
+	:: button_press?press_floor_button(i) -> floor_switch[i] = 1
+	:: button_press?press_elevator_button(i) -> lift_switch[i] = 1
+	:: else -> skip // TODO: Throw some error here
+	fi
 }
