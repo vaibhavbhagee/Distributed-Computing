@@ -15,16 +15,19 @@ chan to_elevator = [0] of { mtype } // Channel to send instructions from control
 chan button_press = [0] of { mtype, byte} // Channel to record button presses
 
 // Models the elevator controller
-proctype elevator_controller()
+active proctype elevator_controller()
 {
-start: curr_floor = 0;
+	curr_floor = 0;
+	motion_direction = 0; // Initially assumed to be going downwards
+
+start: 
 	to_elevator!close_door // Instruct the elevator to close doors
 
 check_direction: 
 	if 
 	:: curr_floor == 0 -> motion_direction = 1 // If at lowest floor, move up
 	:: curr_floor == 2 -> motion_direction = 0 // If at highest floor, move down
-	:: else -> skip // Otherwise don't change
+	:: else -> goto move_up_or_down // Otherwise don't change
 	fi
 
 move_up_or_down:
@@ -57,19 +60,44 @@ unpress_button:
 }
 
 // Models the elevator
-proctype elevator()
+active proctype elevator()
 {
+	door_state = 1
 
+start:
+	to_elevator?close_door -> door_state = 0; // Close door and update door state
+
+wait_for_move:
+	if
+	:: to_elevator?move_up -> goto moving_upward
+	:: to_elevator?move_down -> goto moving_downward
+	:: to_elevator?open_door -> door_state = 1 -> goto start
+	:: else -> skip // TODO: Throw some error here
+	fi
+
+moving_upward:
+	if
+	:: to_elevator?move_up -> goto moving_upward
+	:: to_elevator?stop -> goto wait_for_move
+	:: else -> skip // TODO: Throw some error here
+	fi
+
+moving_downward:
+	if
+	:: to_elevator?move_down -> goto moving_downward
+	:: to_elevator?stop -> goto wait_for_move
+	:: else -> skip // TODO: Throw some error here
+	fi
 }
 
 // Models the elevator and floor button presses
-proctype press_buttons()
+active proctype press_buttons()
 {
 
 }
 
 // Records the button presses for the controller
-proctype record_button_presses()
+active proctype record_button_presses()
 {
 
 }
