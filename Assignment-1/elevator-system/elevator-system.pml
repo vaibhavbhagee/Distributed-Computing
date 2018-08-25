@@ -70,13 +70,13 @@ active proctype elevator()
 	door_state = 1
 
 start:
-	to_elevator?close_door -> door_state = 0; // Close door and update door state
+	to_elevator?close_door -> atomic {door_state = 0; goto wait_for_move} // Close door and update door state
 
 wait_for_move:
 	if
 	:: to_elevator?move_up -> goto moving_upward
 	:: to_elevator?move_down -> goto moving_downward
-	:: to_elevator?open_door -> door_state = 1 -> goto start
+	:: to_elevator?open_door -> atomic {door_state = 1 -> goto start}
 	fi
 
 moving_upward:
@@ -118,3 +118,7 @@ start:
 	fi
 	goto start
 }
+
+// LTL Properties specification
+ltl invariant { [] (curr_floor >= 0 && curr_floor <= 2)}
+// ltl { [] (!(door_state == 1 && (elevator_controller[0]@upward_motion || elevator_controller[0]@downward_motion)))}
