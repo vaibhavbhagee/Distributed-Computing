@@ -31,10 +31,13 @@ close_elevator_doors:
 
 check_direction: 
 	if 
-	:: curr_floor == 0 -> motion_direction = 1 // If at lowest floor, move up
-	:: curr_floor == 2 -> motion_direction = 0 // If at highest floor, move down
+	:: curr_floor == 0 -> motion_direction = 1 -> goto halt_and_change_dir // If at lowest floor, move up
+	:: curr_floor == 2 -> motion_direction = 0 -> goto halt_and_change_dir // If at highest floor, move down
 	:: else -> goto move_up_or_down
 	fi
+
+halt_and_change_dir: 
+	to_elevator!stop
 
 move_up_or_down:
 	if
@@ -76,6 +79,7 @@ wait_for_move:
 	if
 	:: to_elevator?move_up -> goto moving_upward
 	:: to_elevator?move_down -> goto moving_downward
+	:: to_elevator?stop -> goto wait_for_move // To handshake with direction changing halts
 	:: to_elevator?open_door -> door_state = 1 -> goto start
 	fi
 
@@ -109,7 +113,9 @@ start:
 // Records the button presses for the controller
 active proctype record_button_presses()
 {
-	byte i
+	byte i;
+	floor_switch[0] = 0; floor_switch[1] = 0; floor_switch[2] = 0;
+	lift_switch[0] = 0; lift_switch[1] = 0; lift_switch[2] = 0;
 
 start:
 	if
@@ -121,13 +127,30 @@ start:
 
 // LTL Properties specification
 ltl valid_range 
-{ [] 
+{ 
+	[] 
 	(curr_floor >= 0 && curr_floor <= 2)
 }
 
 ltl door_closed_in_motion 
-{ [] 
+{ 
+	[] 
 	(
 		!(door_state == 1 && (elevator_controller[0]@upward_motion || elevator_controller[0]@downward_motion))
+	)
+}
+
+ltl every_floor_infinitely_often
+{
+	([]<> curr_floor == 0) && ([]<> curr_floor == 1) && ([]<> curr_floor == 2)
+}
+
+ltl elevator_use_serviced
+{
+	[]
+	(
+		((floor_switch[0] == 1) -> <> (curr_floor == 0 && elevator_controller[0]@start)) &&
+		((floor_switch[1] == 1) -> <> (curr_floor == 1 && elevator_controller[0]@start)) &&
+		((floor_switch[2] == 1) -> <> (curr_floor == 2 && elevator_controller[0]@start))
 	)
 }
