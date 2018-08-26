@@ -38,8 +38,8 @@ check_direction:
 
 move_up_or_down:
 	if
-	:: motion_direction == 0 -> goto downward_motion
-	:: motion_direction == 1 -> goto upward_motion
+	:: motion_direction == 0 && door_state == 0 -> goto downward_motion
+	:: motion_direction == 1 && door_state == 0 -> goto upward_motion
 	fi
 
 upward_motion:
@@ -70,13 +70,13 @@ active proctype elevator()
 	door_state = 1
 
 start:
-	to_elevator?close_door -> atomic {door_state = 0; goto wait_for_move} // Close door and update door state
+	to_elevator?close_door -> door_state = 0; goto wait_for_move // Close door and update door state
 
 wait_for_move:
 	if
 	:: to_elevator?move_up -> goto moving_upward
 	:: to_elevator?move_down -> goto moving_downward
-	:: to_elevator?open_door -> atomic {door_state = 1 -> goto start}
+	:: to_elevator?open_door -> door_state = 1 -> goto start
 	fi
 
 moving_upward:
@@ -120,5 +120,14 @@ start:
 }
 
 // LTL Properties specification
-ltl invariant { [] (curr_floor >= 0 && curr_floor <= 2)}
-// ltl { [] (!(door_state == 1 && (elevator_controller[0]@upward_motion || elevator_controller[0]@downward_motion)))}
+ltl valid_range 
+{ [] 
+	(curr_floor >= 0 && curr_floor <= 2)
+}
+
+ltl door_closed_in_motion 
+{ [] 
+	(
+		!(door_state == 1 && (elevator_controller[0]@upward_motion || elevator_controller[0]@downward_motion))
+	)
+}
