@@ -126,12 +126,15 @@ start:
 }
 
 // LTL Properties specification
+
+// 1. Current floor number always stays between 0 and 2
 ltl valid_range 
 { 
 	[] 
 	(curr_floor >= 0 && curr_floor <= 2)
 }
 
+// 2. The elevator never moves with its doors open
 ltl door_closed_in_motion 
 { 
 	[] 
@@ -140,11 +143,13 @@ ltl door_closed_in_motion
 	)
 }
 
+// 3. The elevator visits every floor infinitely often
 ltl every_floor_infinitely_often
 {
 	([]<> curr_floor == 0) && ([]<> curr_floor == 1) && ([]<> curr_floor == 2)
 }
 
+// 4. Requests to use the elevator are eventually serviced
 ltl elevator_use_serviced
 {
 	[]
@@ -155,6 +160,7 @@ ltl elevator_use_serviced
 	)
 }
 
+// 5. Requests to be delivered to a particular floor are eventually serviced
 ltl floor_reach_serviced
 {
 	[]

@@ -1,5 +1,6 @@
 SPIN = spin
-RUN_FLAGS = -run -v -a -f -DNOREDUCE -DNFAIR=3 -m100000
+MAX_DEPTH = 100000
+RUN_FLAGS = -run -v -a -f -DNOREDUCE -DNFAIR=3 -m$(MAX_DEPTH)
 REPLAY_FLAGS = -t -p
 SRC_FILE = elevator-system.pml
 
