@@ -154,3 +154,13 @@ ltl elevator_use_serviced
 		((floor_switch[2] == 1) -> <> (curr_floor == 2 && elevator_controller[0]@start))
 	)
 }
+
+ltl floor_reach_serviced
+{
+	[]
+	(
+		((lift_switch[0] == 1) -> <> (curr_floor == 0 && elevator_controller[0]@start)) &&
+		((lift_switch[1] == 1) -> <> (curr_floor == 1 && elevator_controller[0]@start)) &&
+		((lift_switch[2] == 1) -> <> (curr_floor == 2 && elevator_controller[0]@start))
+	)
+}

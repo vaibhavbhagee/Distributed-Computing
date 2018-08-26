@@ -12,6 +12,9 @@ valid_range:
 elevator_use_serviced:
 	$(SPIN) $(RUN_FLAGS) -Nelevator_use_serviced $(SRC_FILE)
 
+floor_reach_serviced:
+	$(SPIN) $(RUN_FLAGS) -Nfloor_reach_serviced $(SRC_FILE)
+
 door_closed_in_motion:
 	$(SPIN) $(RUN_FLAGS) -Ndoor_closed_in_motion $(SRC_FILE)
 
