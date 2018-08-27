@@ -30,6 +30,7 @@ close_elevator_doors:
 	to_elevator!close_door // Instruct the elevator to close doors
 
 check_direction: 
+progress_change_direction:
 	if 
 	:: curr_floor == 0 -> motion_direction = 1 -> goto halt_and_change_dir // If at lowest floor, move up
 	:: curr_floor == 2 -> motion_direction = 0 -> goto halt_and_change_dir // If at highest floor, move down
@@ -46,11 +47,13 @@ move_up_or_down:
 	fi
 
 upward_motion:
+progress_up:
 	curr_floor = curr_floor + 1;
 	to_elevator!move_up; // Instruct the elevator to move up
 	goto check_open_or_change_direction
 
 downward_motion:
+progress_down:
 	curr_floor = curr_floor - 1;
 	to_elevator!move_down; // Instruct the elevator to move downwards
 	goto check_open_or_change_direction
@@ -143,11 +146,7 @@ ltl door_closed_in_motion
 	)
 }
 
-// 3. The elevator visits every floor infinitely often
-ltl every_floor_infinitely_often
-{
-	([]<> curr_floor == 0) && ([]<> curr_floor == 1) && ([]<> curr_floor == 2)
-}
+// 3. The elevator visits every floor infinitely often (Proved using 'progress' labels)
 
 // 4. Requests to use the elevator are eventually serviced
 ltl elevator_use_serviced
