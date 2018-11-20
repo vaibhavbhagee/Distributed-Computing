@@ -1,0 +1,18 @@
+@InProceedings{hlc,
+author="Kulkarni, Sandeep S.
+and Demirbas, Murat
+and Madappa, Deepak
+and Avva, Bharadwaj
+and Leone, Marcelo",
+editor="Aguilera, Marcos K.
+and Querzoni, Leonardo
+and Shapiro, Marc",
+title="Logical Physical Clocks",
+booktitle="Principles of Distributed Systems",
+year="2014",
+publisher="Springer International Publishing",
+address="Cham",
+pages="17--32",
+abstract="There is a gap between the theory and practice of distributed systems in terms of the use of time. The theory of distributed systems shunned the notion of time, and introduced ``causality tracking'' as a clean abstraction to reason about concurrency. The practical systems employed physical time (NTP) information but in a best effort manner due to the difficulty of achieving tight clock synchronization. In an effort to bridge this gap and reconcile the theory and practice of distributed systems on the topic of time, we propose a hybrid logical clock, HLC, that combines the best of logical clocks and physical clocks. HLC captures the causality relationship like logical clocks, and enables easy identification of consistent snapshots in distributed systems. Dually, HLC can be used in lieu of physical/NTP clocks since it maintains its logical clock to be always close to the NTP clock. Moreover HLC fits in to 64 bits NTP timestamp format, and is masking tolerant to NTP kinks and uncertainties.We show that HLC has many benefits for wait-free transaction ordering and performing snapshot reads in multiversion globally distributed databases.",
+isbn="978-3-319-14472-6"
+}

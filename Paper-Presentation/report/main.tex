@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{titlepic}
+\usepackage{caption}
+\usepackage{subcaption}
+% \documentclass{beamer}
+
+\newcommand{\namesigdate}[2][5cm]{%
+  \begin{tabular}{@{}p{#1}@{}}
+    #2 \\[0.4\normalbaselineskip] \hrule \\[0pt]
+    {\small } \\[2\normalbaselineskip] 
+  \end{tabular} 
+}
+
+\title{\textbf{Hybrid Logical Clocks}}
+\author{Vaibhav Bhagee (2014CS50297)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\noindent\rule{3.2cm}{0.4pt} 
+\end{center}
+
+    \section{Introduction}
+
+    Ordering of events in a distributed system is of utmost importance when arguing about causality and correctness, with clocks lying at the very heart of that. Most of the work done in distributed computing completely disregards the physical notion of time and is based on its logical notion. While that helps us track causality of events in a system, most physical implementations can't entirely do away with the physical notion of time in order to support real time operations and queries. \\
+
+    Physical clocks are also known to have issues, related to non monotonicity and drift, which makes them infeasible for causality tracking. In this report, we look at Hybrid Logical Clocks\cite{hlc}, which help us get the best out of both worlds. HLC timestamps enable tracking causality of events in a distributed system, while being a bounded approximation to the system time. Further properties of HLCs along with their applications, have been discussed is greater detail in the subsequent sections.
+
+    % \section{Motivation}
+
+    
+
+    % \section{Hybrid Logical Clocks}
+
+    
+
+    % \subsection{Algorithm}
+
+
+
+    % \subsection{Properties}
+
+    
+
+    % \subsection{Applications}
+
+    
+
+    % \section{Extensions and research directions}    
+
+\bibliographystyle{acm}
+\bibliography{references}
+
+\end{document}
