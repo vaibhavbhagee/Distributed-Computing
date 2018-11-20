@@ -28,11 +28,35 @@
 
     Ordering of events in a distributed system is of utmost importance when arguing about causality and correctness, with clocks lying at the very heart of that. Most of the work done in distributed computing completely disregards the physical notion of time and is based on its logical notion. While that helps us track causality of events in a system, most physical implementations can't entirely do away with the physical notion of time in order to support real time operations and queries. \\
 
-    Physical clocks are also known to have issues, related to non monotonicity and drift, which makes them infeasible for causality tracking. In this report, we look at Hybrid Logical Clocks\cite{hlc}, which help us get the best out of both worlds. HLC timestamps enable tracking causality of events in a distributed system, while being a bounded approximation to the system time. Further properties of HLCs along with their applications, have been discussed is greater detail in the subsequent sections.
+    Physical clocks are also known to have issues, related to non monotonosity and drift, which makes them infeasible for causality tracking. In this report, we look at Hybrid Logical Clocks\cite{hlc}, which help us get the best out of both worlds. HLC timestamps enable tracking causality of events in a distributed system, while being a bounded approximation to the system time. Further properties of HLCs along with their applications, have been discussed is greater detail in the subsequent sections.
 
-    % \section{Motivation}
+    \section{Motivation}
 
-    
+    There have been various attempts made towards formulation of algorithms, used to timestamp events in a distributed system. A key requirement from such an algorithm is that the timestamps should be such that they should at least enable tracking causal dependencies among the events of the system. \\
+
+    Let us denote the timestamp of an event $e$ as $t.e$. Then, in particular, for two events $e$ and $f$, $$e \prec f \rightarrow t.e < t.f$$ where $\prec$ is the $happens\ before$ relation.
+
+    \subsection{Logical and Vector Clocks}
+
+    Logical clocks\cite{lc} proposed by Lamport and Vector clocks\cite{vc} proposed by Mattern, timestamp the events based on the logical notion of time. They do away with system clocks and the physical notions of time. Both the algorithms enable tracking of causal dependencies as described above. Vector clocks further ensure that for two events $e$ and $f$, $$e \prec f \iff t.e < t.f$$ where $\prec$ is the $happens\ before$ relation. \\
+
+    However, real time deployments of distributed systems cannot rely solely on logical and vector clocks. Many systems like distributed databases require answering of queries which rely on physical time. An example of such a query in a system which tracks jobs running on a group of virtual machines could involve returning the IDs of the events which failed in the part hour. In such a scenario, logical clocks become incapable of answering such queries. \\
+
+    Also, vector clocks have an associated space overhead, where the storage is proportional to the number of processes in the system. Many algorithms have since been proposed which try to bound the storage of the vector clock timestamps. While those algorithms successfully bound the storage costs, the trade of has to be made with an increased computation cost, while tracking the causal dependencies.
+
+    \subsection{Physical Clocks}
+
+    Physical clocks, unlike logical clocks, take into account the system time at the nodes. The vanilla physical clocks suffer from issues of $drift$ and $non\ monotonosity$. Due to the different rates at which the clocks at different nodes of the system might tick, the latter may eventually drift apart. This leads to a periodic requirement for $clock\ synchronisation$. \\
+
+    While synchronisation resolves the problem of drift, it leads to a new problem of non monotonosity. Due to the periodic synchronisation, it may so happen that the timestamp at a later stage of the protocol, might turn out to be lesser that the timestamp at an earlier stage. Thus, it can happen that for two events $e$ and $f$, the event $e\ \prec\ f$ but $l.e\ >\ l.f$. This leads to periods of uncertainty and subsequently leading to inability to order events.
+
+    \subsection{True Time}
+
+    True time is proposed by Google, as a part of their strongly consistent distributed database called Spanner\cite{spanner}. Spanner utilises GPS and atomic clocks for tight clock synchronisation. This leads to a very low clock drift. However, this can still have small periods of uncertainty. True time, exposes this uncertainty as an abstraction. \\
+
+    The timestamp allotted by True time is a tuple $(earliest,\ latest)$, which specifies the bounds in which the exact timestamp could lie. If the intervals for two events overlap, it leads to uncertainty. To overcome this limitation, Spanner uses the idea of inducing delays. This means that if an event $e\ \prec\ f$ and the timestamps of $e$ and $f$ are not disjoint, then we delay $f$ to a point where $f.earliest\ >\ e.greatest$. \\
+
+    To overcome the limitations of the algorithms, as pointed out earlier, the authors propose Hybrid Logical Clocks.
 
     % \section{Hybrid Logical Clocks}
 

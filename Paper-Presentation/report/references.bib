@@ -16,3 +16,39 @@ pages="17--32",
 abstract="There is a gap between the theory and practice of distributed systems in terms of the use of time. The theory of distributed systems shunned the notion of time, and introduced ``causality tracking'' as a clean abstraction to reason about concurrency. The practical systems employed physical time (NTP) information but in a best effort manner due to the difficulty of achieving tight clock synchronization. In an effort to bridge this gap and reconcile the theory and practice of distributed systems on the topic of time, we propose a hybrid logical clock, HLC, that combines the best of logical clocks and physical clocks. HLC captures the causality relationship like logical clocks, and enables easy identification of consistent snapshots in distributed systems. Dually, HLC can be used in lieu of physical/NTP clocks since it maintains its logical clock to be always close to the NTP clock. Moreover HLC fits in to 64 bits NTP timestamp format, and is masking tolerant to NTP kinks and uncertainties.We show that HLC has many benefits for wait-free transaction ordering and performing snapshot reads in multiversion globally distributed databases.",
 isbn="978-3-319-14472-6"
 }
+
+@article{lc,
+ author = {Lamport, Leslie},
+ title = {Time, Clocks, and the Ordering of Events in a Distributed System},
+ journal = {Commun. ACM},
+ issue_date = {July 1978},
+ volume = {21},
+ number = {7},
+ month = jul,
+ year = {1978},
+ issn = {0001-0782},
+ pages = {558--565},
+ numpages = {8},
+ url = {http://doi.acm.org/10.1145/359545.359563},
+ doi = {10.1145/359545.359563},
+ acmid = {359563},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {clock synchronization, computer networks, distributed systems, multiprocess systems},
+}
+
+@INPROCEEDINGS{vc,
+    author = {Friedemann Mattern},
+    title = {Virtual Time and Global States of Distributed Systems},
+    booktitle = {PARALLEL AND DISTRIBUTED ALGORITHMS},
+    year = {1988},
+    pages = {215--226},
+    publisher = {North-Holland}
+} 
+
+@inproceedings{spanner,
+title = {Spanner: Google's Globally-Distributed Database},
+author  = {James C. Corbett and Jeffrey Dean and Michael Epstein and Andrew Fikes and Christopher Frost and JJ Furman and Sanjay Ghemawat and Andrey Gubarev and Christopher Heiser and Peter Hochschild and Wilson Hsieh and Sebastian Kanthak and Eugene Kogan and Hongyi Li and Alexander Lloyd and Sergey Melnik and David Mwaura and David Nagle and Sean Quinlan and Rajesh Rao and Lindsay Rolig and Dale Woodford and Yasushi Saito and Christopher Taylor and Michal Szymaniak and Ruth Wang},
+year  = {2012},
+booktitle = {OSDI}
+}
