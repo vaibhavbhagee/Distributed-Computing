@@ -58,19 +58,19 @@
 
     To overcome the limitations of the algorithms, as pointed out earlier, the authors propose Hybrid Logical Clocks.
 
-    % \section{Hybrid Logical Clocks}
+    \section{Hybrid Logical Clocks}
 
-    
+    For every event $e$, the HLC associates a timestamp value $t$ such that $t\ =\ (l,c)$. Here $l$ is the physical component of the timestamp and $c$ is the logical component. While preserving the causal ordering property of logical clocks, the HLC timestamps are withing an $\epsilon$ bound of the physical clock timestamps. The updates to the HLC timestamps are monotonic and the space requirement for the HLC timestamp is bounded.
 
-    % \subsection{Algorithm}
+    \subsection{Algorithm}
 
-
+    At an abstract level, for an event $f$, the HLC timestamp at $f$ depends on the HLC timestamp at the predecessor(s) of $f$. If the physical clock timestamp at the event $f$ has not caught up with the value of the physical component of the HLC timestamp at the predecessor, then the causal component of the HLC timestamp at $f$ is incremented by 1, to capture the causality while the physical component of the latter is kept equal to the corresponding component of the predecessor. However, if the physical timestamp at $f$ manages to catch up, as discussed before, then the causal component gets reset to 0. A formal algorithm is given as follows: 
 
     % \subsection{Properties}
 
     
 
-    % \subsection{Applications}
+    % \section{Applications of HLCs}
 
     
 
