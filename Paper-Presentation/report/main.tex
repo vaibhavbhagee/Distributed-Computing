@@ -154,7 +154,17 @@
 
     HLC timestamps can be used to ensure that if all the processes take a snapshot of their state at a fixed HLC timestamp say $k$, then these snapshotting events are bound to be concurrent, always leading to consistent cuts. Moreover, a snapshot taken at a process, at an HLC timestamp of $(l=k,c=0)$ will always be a good estimate of the system state at physical time $k$, due to the properties of HLCs discussed above.
 
-    % \section{Extensions and research directions}    
+    \section{Extensions and research directions}
+
+    \subsection{Event ordering and predicate detection}
+
+    HLCs can be integrated with event ordering services, like Kronos\cite{kronos}, where every process could register the occurrence of an event at an HLC time $t$, with the ordering service, and the same could be locally performed at every process at the specified time. The results could later be collected by the monitor processes and used. This essentially makes the problems like snapshotting, predicate detection, termination detection etc. local operations to an extent, avoiding multiple rounds of message passing to ensure consistency and correctness.
+
+    \subsection{Physical time with vector clocks}
+
+    The current limitation of HLC is that if for events $e$ and $f$ we know that $hlc.e\ <\ hlc.f$ then we can conclude that either $e\ \prec\ f$ or $e$ and $f$ were concurrent. If, we can integrate the ideas of vector clocks with physical time in a way which can also ensure that $hlc.e\ <\ hlc.f$ if and only if $e\ \prec\ f$, then we could use this modified clock algorithm in consensus protocols involving some kind of leader election, to impose a total order on the requests made by the individual processes, at a global level, and choose the minimum one as the leader, thereby avoiding multiple rounds of message passing.
+
+    \newpage
 
 \bibliographystyle{acm}
 \bibliography{references}
