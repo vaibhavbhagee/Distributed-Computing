@@ -64,11 +64,42 @@
 
     \subsection{Algorithm}
 
-    At an abstract level, for an event $f$, the HLC timestamp at $f$ depends on the HLC timestamp at the predecessor(s) of $f$. If the physical clock timestamp at the event $f$ has not caught up with the value of the physical component of the HLC timestamp at the predecessor, then the causal component of the HLC timestamp at $f$ is incremented by 1, to capture the causality while the physical component of the latter is kept equal to the corresponding component of the predecessor. However, if the physical timestamp at $f$ manages to catch up, as discussed before, then the causal component gets reset to 0. A formal algorithm is given as follows: 
+    At an abstract level, for an event $f$, the HLC timestamp at $f$ depends on the HLC timestamp at the predecessor(s) of $f$. If the physical clock timestamp at the event $f$ has not caught up with the value of the physical component of the HLC timestamp at the predecessor, then the causal component of the HLC timestamp at $f$ is incremented by 1, to capture the causality while the physical component of the latter is kept equal to the corresponding component of the predecessor. However, if the physical timestamp at $f$ manages to catch up, as discussed before, then the causal component gets reset to 0. A formal algorithm is given in figure 1. 
 
-    % \subsection{Properties}
+    \begin{figure}[h!]
+        \begin{center}
+        \includegraphics[resolution=125]{algorithm.png}
+        \end{center}
+        \caption{HLC Algorithm}
+    \end{figure}
 
-    
+    \subsection{Properties}
+
+    After having looked at the HLC algorithm, we will now look at the properties satisfied by the HLC timestamps. We will discuss about the reasoning in brief. The interested readers can take a look at the technical paper, for the detailed arguments. \\
+
+    \noindent \textbf{Theorem 1:} For any two events $e$ and $f$, $$e \prec f \rightarrow (l.e,c.e) < (l.f,c.f)$$ \\
+
+    This can be formally proved, directly from the algorithm. Intuitively, if $e\ \prec\ f$, then due to the use of the $max$ function, we can show that $l.e\ \leq\ l.f$. Now, if $l.e\ <\ l.f$ then the consequent becomes true. Otherwise if $l.e\ =\ l.f$ then, by the algorithm, $c.f\ =\ c.e\ +\ 1$. \\
+
+    \noindent \textbf{Theorem 2:} For any event $f$, $l.f\ \geq\ pt.f$ \\
+
+    This is also a direct consequence of the algorithm. \\
+
+    \noindent \textbf{Theorem 3:} $l.f$ denotes the maximum clock value that $f$ is aware of. Thus, $$l.f > pt.f \rightarrow (\exists g: g \prec f \land pt.g = l.f)$$ \\
+
+    This can be proved using induction. For the induction step, we consider the cases when $f$ is a send event or a receive event. In the former case, let $e$ be the event just preceding the send. Thus, for $e$ we have $$l.e > pt.e \rightarrow (\exists g: g \prec e \land pt.g = l.e)$$ Now, if $l.f\ >\ pt.f$, then, according to the algorithm, we have $l.e\ =\ l.f\ =\ pt.g$. The proof for the latter case is similar to the proof of the former. \\
+
+    \noindent \textbf{Theorem 4:} For any event $f$, $|l.f\ -\ pt.f|\ <\ \epsilon$ \\
+
+    We use the clock synchronisation constraints for the physical clocks, which ensure that there cannot exist events $g$ and $f$ such that $g\ \prec\ f$ and $pt.g\ >\ pt.f\ +\ \epsilon$. Also, using the previous theorem we have $$l.f > pt.f \rightarrow (\exists g: g \prec f \land pt.g = l.f)$$ But, $pt.g\ \leq\ pt.f\ +\ \epsilon$. Thus, $l.f\ \leq\ pt.f\ +\ \epsilon$. \\
+
+    \noindent \textbf{Theorem 5:} For any event $f$, $c.f\ =\ k\ \land\ k\ >\ 0\ \rightarrow$ $\exists$ a chain of $k$ events which causally precede the event $f$ in the system, having the same value of the physical component of the HLC. \\
+
+    This property is similar to the property of Lamport clock timestamps. This can be proved using induction, as the authors have suggested in the paper. Intuitively, we can again split the proof into cases when $f$ is a send or a receive event and both the cases are proven similarly. For the send case, let $e$ be the event which causally precedes $f$. Then, if $l.e\ =\ l.f$, we have $c.f\ =\ c.e\ +\ 1$ and $e$ satisfies the induction hypothesis. As mentioned, the proof of the case when $f$ is a receive event, is similar. \\
+
+    \noindent \textbf{Theorem 6:} For any event $f$, $c.f\ \leq\ N*(\epsilon\ +\ 1)$ \\
+
+    This proof can be done using the clock synchronisation constraints again. Using the constraints, we can conclude that for all events $e$ having $l.e\ =\ l.f$, the event would have happened at a physical time lying in $[l.f,\ l.f+\epsilon]$. Also, at any node, the number of events which can happen in this time interval is at most $\epsilon\ +\ 1$. This is due to the constraint that the physical clock gets incremented by at least $1$ between two subsequent events on the same node. Hence, for $N$ processes, the bound becomes $N*(\epsilon+1)$. \\
 
     % \section{Applications of HLCs}
 
