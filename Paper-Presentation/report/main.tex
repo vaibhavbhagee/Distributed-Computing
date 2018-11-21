@@ -101,9 +101,58 @@
 
     This proof can be done using the clock synchronisation constraints again. Using the constraints, we can conclude that for all events $e$ having $l.e\ =\ l.f$, the event would have happened at a physical time lying in $[l.f,\ l.f+\epsilon]$. Also, at any node, the number of events which can happen in this time interval is at most $\epsilon\ +\ 1$. This is due to the constraint that the physical clock gets incremented by at least $1$ between two subsequent events on the same node. Hence, for $N$ processes, the bound becomes $N*(\epsilon+1)$. \\
 
-    % \section{Applications of HLCs}
+    \section{Applications of HLCs}
 
-    
+    \subsection{Consistency in distributed databases}
+
+    Before going into the discussion about consistent reads and writes in a distributed database deployment, lets us first take a look at the ACID properties, which are satisfied by transactions on relational databases. \\
+
+    \noindent \textbf{Atomicity:} The transactions should happen in an atomic fashion i.e, they should either complete or in case of errors, should leave the database in a state where they appear to have never happened.\\
+
+    \noindent \textbf{Consistency:} The database should go from one consistent state to another, after a transaction. In terms of reads and writes, if a value $x$ is updated in a transaction $T$ by a write operation $w$, then for all the read operations on $x$ which happen after $w$ but before any other write, the value returned should be the one written by $w$. \\
+
+    \noindent \textbf{Isolation:} Transactions can happen in a concurrent fashion but the final state should be such that it should be reachable from the initial state by a sequential application of the participating transactions. \\
+
+    \noindent \textbf{Durability:} Once a transaction is committed, the changes should be persistent. \\
+
+    Distributed database deployments, in order to satisfy the ACID properties, need to make a trade off with efficiency. In order to update all the replicas with the written value, concurrent writes or concurrent read with a write need to be sequenced, leading to a loss off efficiency and speed. \\
+
+    A cluster may decide to reflect the updates on each of the replicas before marking the write as committed, as in the case of $strict\ consistency$ or it may mark the write as committed once the changes are made on the master, while deferring the updates on the other replicas, as in the case of $eventual\ consistency$.
+
+    \begin{figure}[h!]
+        \begin{center}
+        \includegraphics[resolution=125]{strict_consistency.png}
+        \end{center}
+        \caption{Strict consistency}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \begin{center}
+        \includegraphics[resolution=125]{eventual_consistency.png}
+        \end{center}
+        \caption{Eventual consistency}
+    \end{figure}
+
+    However, eventual consistency has the problem of stale reads. If a read happens from a replica where the write has not yet been reflected, it leads to the read returning an old value. This can lead to issues if the application is a sensitive one, like banking. \\
+
+    In order to ensure strict consistency without compromising much on efficient, many data bases make use of $multi\ version\ concurrency\ control$. 
+
+    \begin{figure}[h!]
+        \begin{center}
+        \includegraphics[resolution=125]{mvcc.png}
+        \end{center}
+        \caption{MVCC}
+    \end{figure}
+
+    In MVCC, multiple timestamped versions of the object are maintained in the database, where timestamp denotes the last time at which the object was read. If a write intends to update the value of an object, it first checks if the latest timestamp associated with the object is not more than the timestamp of the write. If that is the case, the transaction gets aborted. Otherwise, a new copy of the object is created with the write timestamp as the timestamp of the write which is being performed and added to the database. For reads, that copy of the object which has the highest write timestamp just lower than the read timestamp, is read. \\
+
+    Hybrid Logical Clocks are used to timestamp the these objects. Since the timestamps preserve causality while being within a bound of the physical time, they allow the database reads to be consistent and alongside that, retaining the information about the physical time, ensuring that queries relying on system time can also be performed.
+
+    \subsection{Global snapshotting}
+
+    In global snapshotting with logical clocks, an initiator process had to take charge of the initiation of the algorithm, while passing around messages for identification of consistent cuts. What prevented every process to take independent charge of taking the snapshot of its system state at a fixed time was the fact that there was no notion of physical time available to the processes and the logical time at multiple processes could be the same for vastly different physical times. \\
+
+    HLC timestamps can be used to ensure that if all the processes take a snapshot of their state at a fixed HLC timestamp say $k$, then these snapshotting events are bound to be concurrent, always leading to consistent cuts. Moreover, a snapshot taken at a process, at an HLC timestamp of $(l=k,c=0)$ will always be a good estimate of the system state at physical time $k$, due to the properties of HLCs discussed above.
 
     % \section{Extensions and research directions}    
 
